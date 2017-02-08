@@ -424,8 +424,8 @@ class CRM_Financialreports_Form_Report_Contribute_MonthlyTotal extends CRM_Repor
    *
    */
   public function from() {
-    $this->setFromBase('civicrm_contact');
-    $this->_from .= "
+    $this->_from = " FROM
+        civicrm_contact AS {$this->_aliases['civicrm_contact']}
         INNER JOIN {$this->_tempTableName} AS {$this->_aliases[$this->_tempTableName]}
           ON {$this->_aliases[$this->_tempTableName]}.contact_id = {$this->_aliases['civicrm_contact']}.id";
   }
