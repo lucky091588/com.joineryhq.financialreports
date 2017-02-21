@@ -67,6 +67,13 @@ class CRM_Financialreports_Form_Report_Contribute_MonthlyTotal extends CRM_Repor
    */
   private $_tempTableName = 'temp_monthlytotal';
 
+  // Hard-coded tag IDs from Amiela CiviCRM
+  private $amiela_tag_ids = array(
+    'donors-zellereric-only' => 97,
+    'donors-zellerscott-only' => 98,
+    'donors-zeller-split-50-50' => 100,
+  );
+
   /**
    * Class constructor.
    */
@@ -286,6 +293,8 @@ class CRM_Financialreports_Form_Report_Contribute_MonthlyTotal extends CRM_Repor
       ),
     );
 
+    $this->_setAmielaTagColumns();
+
     // Check if CiviCampaign is a) enabled and b) has active campaigns
     $config = CRM_Core_Config::singleton();
     $campaignEnabled = in_array("CiviCampaign", $config->enableComponents);
@@ -311,6 +320,43 @@ class CRM_Financialreports_Form_Report_Contribute_MonthlyTotal extends CRM_Repor
 
     parent::__construct();
   }
+
+  function _setAmielaTagColumns() {
+//    - *E* - if the donor has the "donors-zellereric-only" tag and NOT the "donors-zellerscott-only" tag.
+//    - *S* - if the donor has the "donors-zellerscott-only" tag and/ NOT the "donors-zellereric-only" tag.
+//    - *B* - if the donor has the "donors-zeller-split-50-50" tag OR both the "donors-zellereric-only" and "donors-zellerscott-only" tags
+//    - *U* - if the donor is not tagged with any of the three tags mentioned above
+//
+    $this->_columns['civicrm_entity_tag_custom'] = array(
+      'alias' => 'civicrm_entity_tag',
+      'fields' => array(
+        'donor_status' => array(
+          'title' => ts('Donor status'),
+          'dbAlias' => "if(
+              civicrm_entity_tag_custom_{$this->amiela_tag_ids['donors-zellereric-only']}.entity_id IS NOT NULL
+              AND civicrm_entity_tag_custom_{$this->amiela_tag_ids['donors-zellerscott-only']}.entity_id IS NULL,
+              'E',
+              if (
+                civicrm_entity_tag_custom_{$this->amiela_tag_ids['donors-zellerscott-only']}.entity_id IS NOT NULL
+                AND civicrm_entity_tag_custom_{$this->amiela_tag_ids['donors-zellereric-only']}.entity_id IS NULL,
+                'S',
+                if (
+                  civicrm_entity_tag_custom_{$this->amiela_tag_ids['donors-zeller-split-50-50']}.entity_id IS NOT NULL
+                  OR (
+                    civicrm_entity_tag_custom_{$this->amiela_tag_ids['donors-zellerscott-only']}.entity_id IS NOT NULL
+                    AND civicrm_entity_tag_custom_{$this->amiela_tag_ids['donors-zellereric-only']}.entity_id IS NOT NULL
+                  ),
+                  'B',
+                  'U'
+                )
+              )
+            )
+          ",
+        ),
+      ),
+    );
+  }
+
 
   /**
    * Overrides parent::beginPostProcessCommon().  This allows us to build and
@@ -500,8 +546,45 @@ class CRM_Financialreports_Form_Report_Contribute_MonthlyTotal extends CRM_Repor
         civicrm_contact AS {$this->_aliases['civicrm_contact']}
         INNER JOIN {$this->_tempTableName} AS {$this->_aliases[$this->_tempTableName]}
           ON {$this->_aliases[$this->_tempTableName]}.contact_id = {$this->_aliases['civicrm_contact']}.id";
+    if ($this->isTableSelected('civicrm_entity_tag_custom')) {
+      foreach ($this->amiela_tag_ids as $tag_title => $tag_id) {
+        $this->_from .= "
+          LEFT JOIN civicrm_entity_tag AS civicrm_entity_tag_custom_{$tag_id}
+            ON civicrm_entity_tag_custom_{$tag_id}.entity_table = 'civicrm_contact'
+            AND civicrm_entity_tag_custom_{$tag_id}.entity_id = {$this->_aliases['civicrm_contact']}.id
+            AND civicrm_entity_tag_custom_{$tag_id}.tag_id = {$tag_id}
+        ";
+      }
+    }
   }
 
+  public function groupBy() {
+    // Copied from parent::groupBy(): BEGIN ===============>
+    $groupBys = array();
+    if (!empty($this->_params['group_bys']) &&
+      is_array($this->_params['group_bys'])
+    ) {
+      foreach ($this->_columns as $tableName => $table) {
+        if (array_key_exists('group_bys', $table)) {
+          foreach ($table['group_bys'] as $fieldName => $field) {
+            if (!empty($this->_params['group_bys'][$fieldName])) {
+              $groupBys[] = $field['dbAlias'];
+            }
+          }
+        }
+      }
+    }
+    // <=============== Copied from parent::groupBy(): END
+
+    if ($this->isTableSelected('civicrm_entity_tag_custom')) {
+      $groupBys[] = "{$this->_aliases['civicrm_contact']}.id";
+    }
+
+    if (!empty($groupBys)) {
+      $this->_groupBy = "GROUP BY " . implode(', ', $groupBys);
+    }
+
+  }
 
   /**
    * Alter display of rows.
