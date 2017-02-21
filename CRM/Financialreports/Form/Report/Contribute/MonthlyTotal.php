@@ -32,6 +32,12 @@
  */
 class CRM_Financialreports_Form_Report_Contribute_MonthlyTotal extends CRM_Report_Form {
   /**
+   * Include all searchable custom fields as orderbys.
+   * @var <type>
+   */
+  protected $_autoIncludeIndexedFieldsAsOrderBys = TRUE;
+
+  /**
    * By default most reports hide contact id.
    * Setting this to true makes it available
    */
@@ -60,7 +66,7 @@ class CRM_Financialreports_Form_Report_Contribute_MonthlyTotal extends CRM_Repor
    * @var String.
    */
   private $_tempTableName = 'temp_monthlytotal';
-  
+
   /**
    * Class constructor.
    */
@@ -96,6 +102,28 @@ class CRM_Financialreports_Form_Report_Contribute_MonthlyTotal extends CRM_Repor
           ),
           'external_identifier' => array(
             'title' => ts('External identifier'),
+          ),
+        ),
+        'order_bys' => array(
+          'sort_name' => array(
+            'title' => ts('Last Name, First Name'),
+            'default' => '1',
+            'default_weight' => '0',
+            'default_order' => 'ASC',
+          ),
+          'gender_id' => array(
+            'name' => 'gender_id',
+            'title' => ts('Gender'),
+          ),
+          'birth_date' => array(
+            'name' => 'birth_date',
+            'title' => ts('Birth Date'),
+          ),
+          'contact_type' => array(
+            'title' => ts('Contact Type'),
+          ),
+          'contact_sub_type' => array(
+            'title' => ts('Contact Subtype'),
           ),
         ),
         'grouping' => 'contact-fields',
@@ -211,6 +239,50 @@ class CRM_Financialreports_Form_Report_Contribute_MonthlyTotal extends CRM_Repor
             'grouping' => 'months',
           ),
         ),
+        'order_bys' => array(
+          '1' => array (
+            'title' => ts('January'),
+          ),
+          '2' => array (
+            'title' => ts('February'),
+          ),
+          '3' => array (
+            'title' => ts('March'),
+          ),
+          '4' => array (
+            'title' => ts('April'),
+          ),
+          '5' => array (
+            'title' => ts('May'),
+          ),
+          '6' => array (
+            'title' => ts('June'),
+          ),
+          '7' => array (
+            'title' => ts('July'),
+          ),
+          '8' => array (
+            'title' => ts('August'),
+          ),
+          '9' => array (
+            'title' => ts('September'),
+          ),
+          '10' => array (
+            'title' => ts('October'),
+          ),
+          '11' => array (
+            'title' => ts('November'),
+          ),
+          '12' => array (
+            'title' => ts('December'),
+          ),
+          'display_total' => array (
+            'title' => ts('All Displayed Months'),
+          ),
+          'all_total' => array (
+            'title' => ts('All Months'),
+          ),
+        ),
       ),
     );
 
@@ -250,7 +322,7 @@ class CRM_Financialreports_Form_Report_Contribute_MonthlyTotal extends CRM_Repor
     // Build and populate the summary table for this report.
     $this->_buildAggregateTable();
   }
-  
+
   /**
    * Depending on the value of $this->_debug, either indicate that the given
    * table should be temporary, or that it should be created as a regular table
@@ -373,7 +445,7 @@ class CRM_Financialreports_Form_Report_Contribute_MonthlyTotal extends CRM_Repor
     // Temporarily remove all filter params so they don't apply to the $where
     // clause in parent::buildQuery(). We've already applied filters in building
     // the temp table, so now we just want all the rows in $this->_tempTableName;
-    // applying the filters again at this point will cause SQL errors.  
+    // applying the filters again at this point will cause SQL errors.
     $backup_params = $this->_params;
     foreach ($this->_columns as $table_name => $table) {
       if (array_key_exists('filters', $table) && is_array($table['filters'])) {
@@ -415,7 +487,7 @@ class CRM_Financialreports_Form_Report_Contribute_MonthlyTotal extends CRM_Repor
           ON {$this->_aliases['civicrm_contribution']}.financial_type_id ={$this->_aliases['civicrm_financial_type']}.id
       ";
     }
-    
+
     return $from;
   }
 
@@ -445,6 +517,8 @@ class CRM_Financialreports_Form_Report_Contribute_MonthlyTotal extends CRM_Repor
     $contributionStatus = CRM_Contribute_PseudoConstant::contributionStatus();
 
     foreach ($rows as $rowNum => $row) {
+
+      $this->alterDisplayContactFields($row, $rows, $rowNum, NULL, NULL);
 
       // convert display_name and sort_name to links
       if (array_key_exists('civicrm_contact_sort_name', $row) &&
