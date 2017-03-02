@@ -135,6 +135,13 @@ class CRM_Financialreports_Form_Report_Contribute_MonthlyTotal extends CRM_Repor
         ),
         'grouping' => 'contact-fields',
       ),
+      'civicrm_email' => array(
+        'fields' => array(
+          'email' => array(
+            'title' => 'Email',
+          ),
+        ),
+      ),
       'civicrm_contribution' => array(
         'dao' => 'CRM_Contribute_DAO_Contribution',
         'grouping' => 'contri-fields',
@@ -292,6 +299,7 @@ class CRM_Financialreports_Form_Report_Contribute_MonthlyTotal extends CRM_Repor
         ),
       ),
     );
+    $this->_columns += $this->getAddressColumns();
 
     $this->_setAmielaTagColumns();
 
@@ -518,22 +526,39 @@ class CRM_Financialreports_Form_Report_Contribute_MonthlyTotal extends CRM_Repor
    * Get an SQL FROM clause to populate sums in the summary table, as appropriate
    * for the selected report parameters.
    *
+   * Note: Since _buildAggregateTable() gets its WHERE clause from $this->_where,
+   * any available filter columns may be included in a query using this FROM
+   * clause. Thus, just as we would do in $this->from(), we must check for the
+   * usage of relevant tables and join them as needed.
    */
   public function _getAggregateFrom() {
-    $from = 'FROM ';
+    $from = ' FROM ';
     $from .= "
       civicrm_contact {$this->_aliases['civicrm_contact']}
       INNER JOIN civicrm_contribution   {$this->_aliases['civicrm_contribution']}
         ON {$this->_aliases['civicrm_contact']}.id = {$this->_aliases['civicrm_contribution']}.contact_id AND
           {$this->_aliases['civicrm_contribution']}.is_test = 0
     ";
-    if ($this->isTableSelected('civicrm_financial_type')) {
+    if ($this->isTableFiltered('civicrm_financial_type')) {
       $from .= "
         LEFT JOIN civicrm_financial_type  {$this->_aliases['civicrm_financial_type']}
           ON {$this->_aliases['civicrm_contribution']}.financial_type_id ={$this->_aliases['civicrm_financial_type']}.id
       ";
     }
 
+    if ($this->isTableFiltered('civicrm_address')) {
+      $from .= "
+                 LEFT JOIN civicrm_address {$this->_aliases['civicrm_address']}
+                           ON ({$this->_aliases['civicrm_contact']}.id =
+                               {$this->_aliases['civicrm_address']}.contact_id) AND
+                               {$this->_aliases['civicrm_address']}.is_primary = 1\n";
+    }
+
+    $from = "
+      /* BEGIN _getAggregateFrom() */
+      $from
+      /* END _getAggregateFrom() */
+    ";
     return $from;
   }
 
@@ -555,6 +580,15 @@ class CRM_Financialreports_Form_Report_Contribute_MonthlyTotal extends CRM_Repor
             AND civicrm_entity_tag_custom_{$tag_id}.tag_id = {$tag_id}
         ";
       }
+    }
+
+    $this->addAddressFromClause();
+    
+    if ($this->isTableSelected('civicrm_email')) {
+      $this->_from .= "
+          LEFT  JOIN civicrm_email  {$this->_aliases['civicrm_email']}
+            ON {$this->_aliases['civicrm_contact']}.id = {$this->_aliases['civicrm_email']}.contact_id
+            AND {$this->_aliases['civicrm_email']}.is_primary = 1";
     }
   }
 
