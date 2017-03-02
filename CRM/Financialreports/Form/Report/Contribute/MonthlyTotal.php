@@ -285,6 +285,7 @@ class CRM_Financialreports_Form_Report_Contribute_MonthlyTotal extends CRM_Repor
         ),
       ),
     );
+    $this->_columns += $this->getAddressColumns();
 
     // Check if CiviCampaign is a) enabled and b) has active campaigns
     $config = CRM_Core_Config::singleton();
@@ -472,9 +473,13 @@ class CRM_Financialreports_Form_Report_Contribute_MonthlyTotal extends CRM_Repor
    * Get an SQL FROM clause to populate sums in the summary table, as appropriate
    * for the selected report parameters.
    *
+   * Note: Since _buildAggregateTable() gets its WHERE clause from $this->_where,
+   * any available filter columns may be included in a query using this FROM
+   * clause. Thus, just as we would do in $this->from(), we must check for the
+   * usage of relevant tables and join them as needed.
    */
   public function _getAggregateFrom() {
-    $from = 'FROM ';
+    $from = ' FROM ';
     $from .= "
       civicrm_contact {$this->_aliases['civicrm_contact']}
       INNER JOIN civicrm_contribution   {$this->_aliases['civicrm_contribution']}
@@ -488,6 +493,19 @@ class CRM_Financialreports_Form_Report_Contribute_MonthlyTotal extends CRM_Repor
       ";
     }
 
+    if ($this->isTableSelected('civicrm_address')) {
+      $from .= "
+                 LEFT JOIN civicrm_address {$this->_aliases['civicrm_address']}
+                           ON ({$this->_aliases['civicrm_contact']}.id =
+                               {$this->_aliases['civicrm_address']}.contact_id) AND
+                               {$this->_aliases['civicrm_address']}.is_primary = 1\n";
+    }
+
+    $from = "
+      /* BEGIN _getAggregateFrom() */
+      $from
+      /* END _getAggregateFrom() */
+    ";
     return $from;
   }
 
@@ -500,6 +518,17 @@ class CRM_Financialreports_Form_Report_Contribute_MonthlyTotal extends CRM_Repor
         civicrm_contact AS {$this->_aliases['civicrm_contact']}
         INNER JOIN {$this->_tempTableName} AS {$this->_aliases[$this->_tempTableName]}
           ON {$this->_aliases[$this->_tempTableName]}.contact_id = {$this->_aliases['civicrm_contact']}.id";
+    if ($this->isTableSelected('civicrm_entity_tag_custom')) {
+      foreach ($this->amiela_tag_ids as $tag_title => $tag_id) {
+        $this->_from .= "
+          LEFT JOIN civicrm_entity_tag AS civicrm_entity_tag_custom_{$tag_id}
+            ON civicrm_entity_tag_custom_{$tag_id}.entity_table = 'civicrm_contact'
+            AND civicrm_entity_tag_custom_{$tag_id}.entity_id = {$this->_aliases['civicrm_contact']}.id
+            AND civicrm_entity_tag_custom_{$tag_id}.tag_id = {$tag_id}
+        ";
+      }
+    }
+    $this->addAddressFromClause();
   }
 
 
