@@ -636,6 +636,7 @@ class CRM_Financialreports_Form_Report_Contribute_MonthlyTotal extends CRM_Repor
     foreach ($rows as $rowNum => $row) {
 
       $this->alterDisplayContactFields($row, $rows, $rowNum, NULL, NULL);
+      $this->alterDisplayAddressFields($row, $rows, $rowNum, NULL, NULL);
 
       // convert display_name and sort_name to links
       if (array_key_exists('civicrm_contact_sort_name', $row) &&
