@@ -128,6 +128,13 @@ class CRM_Financialreports_Form_Report_Contribute_MonthlyTotal extends CRM_Repor
         ),
         'grouping' => 'contact-fields',
       ),
+      'civicrm_email' => array(
+        'fields' => array(
+          'email' => array(
+            'title' => 'Email',
+          ),
+        ),
+      ),
       'civicrm_contribution' => array(
         'dao' => 'CRM_Contribute_DAO_Contribution',
         'grouping' => 'contri-fields',
@@ -486,14 +493,14 @@ class CRM_Financialreports_Form_Report_Contribute_MonthlyTotal extends CRM_Repor
         ON {$this->_aliases['civicrm_contact']}.id = {$this->_aliases['civicrm_contribution']}.contact_id AND
           {$this->_aliases['civicrm_contribution']}.is_test = 0
     ";
-    if ($this->isTableSelected('civicrm_financial_type')) {
+    if ($this->isTableFiltered('civicrm_financial_type')) {
       $from .= "
         LEFT JOIN civicrm_financial_type  {$this->_aliases['civicrm_financial_type']}
           ON {$this->_aliases['civicrm_contribution']}.financial_type_id ={$this->_aliases['civicrm_financial_type']}.id
       ";
     }
 
-    if ($this->isTableSelected('civicrm_address')) {
+    if ($this->isTableFiltered('civicrm_address')) {
       $from .= "
                  LEFT JOIN civicrm_address {$this->_aliases['civicrm_address']}
                            ON ({$this->_aliases['civicrm_contact']}.id =
@@ -528,7 +535,15 @@ class CRM_Financialreports_Form_Report_Contribute_MonthlyTotal extends CRM_Repor
         ";
       }
     }
+
     $this->addAddressFromClause();
+    
+    if ($this->isTableSelected('civicrm_email')) {
+      $this->_from .= "
+          LEFT  JOIN civicrm_email  {$this->_aliases['civicrm_email']}
+            ON {$this->_aliases['civicrm_contact']}.id = {$this->_aliases['civicrm_email']}.contact_id
+            AND {$this->_aliases['civicrm_email']}.is_primary = 1";
+    }
   }
 
 
