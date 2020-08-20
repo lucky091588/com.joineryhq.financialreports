@@ -40,6 +40,8 @@ class CRM_Financialreports_Form_Report_Contribute_MonthlyTotal extends CRM_Repor
   /**
    * By default most reports hide contact id.
    * Setting this to true makes it available
+   *
+   * @var bool
    */
   protected $_exposeContactID = TRUE;
 
@@ -56,7 +58,7 @@ class CRM_Financialreports_Form_Report_Contribute_MonthlyTotal extends CRM_Repor
    * are retained after running the report, and debug messages may be displayed
    * using Drupal's dsm() function (if it's available).
    *
-   * @var Boolean
+   * @var bool
    */
   private $_debug = FALSE;
 
@@ -176,117 +178,117 @@ class CRM_Financialreports_Form_Report_Contribute_MonthlyTotal extends CRM_Repor
       ),
       $this->_tempTableName => array(
         'fields' => array(
-          '1' => array (
+          '1' => array(
             'title' => ts('January'),
             'grouping' => 'months',
             'default' => TRUE,
           ),
-          '2' => array (
+          '2' => array(
             'title' => ts('February'),
             'grouping' => 'months',
             'default' => TRUE,
           ),
-          '3' => array (
+          '3' => array(
             'title' => ts('March'),
             'grouping' => 'months',
             'default' => TRUE,
           ),
-          '4' => array (
+          '4' => array(
             'title' => ts('April'),
             'grouping' => 'months',
             'default' => TRUE,
           ),
-          '5' => array (
+          '5' => array(
             'title' => ts('May'),
             'grouping' => 'months',
             'default' => TRUE,
           ),
-          '6' => array (
+          '6' => array(
             'title' => ts('June'),
             'grouping' => 'months',
             'default' => TRUE,
           ),
-          '7' => array (
+          '7' => array(
             'title' => ts('July'),
             'grouping' => 'months',
             'default' => TRUE,
           ),
-          '8' => array (
+          '8' => array(
             'title' => ts('August'),
             'grouping' => 'months',
             'default' => TRUE,
           ),
-          '9' => array (
+          '9' => array(
             'title' => ts('September'),
             'grouping' => 'months',
             'default' => TRUE,
           ),
-          '10' => array (
+          '10' => array(
             'title' => ts('October'),
             'grouping' => 'months',
             'default' => TRUE,
           ),
-          '11' => array (
+          '11' => array(
             'title' => ts('November'),
             'grouping' => 'months',
             'default' => TRUE,
           ),
-          '12' => array (
+          '12' => array(
             'title' => ts('December'),
             'grouping' => 'months',
             'default' => TRUE,
           ),
-          'display_total' => array (
+          'display_total' => array(
             'title' => ts('All Displayed Months'),
             'grouping' => 'months',
             'default' => TRUE,
           ),
-          'all_total' => array (
+          'all_total' => array(
             'title' => ts('All Months'),
             'grouping' => 'months',
           ),
         ),
         'order_bys' => array(
-          '1' => array (
+          '1' => array(
             'title' => ts('January'),
           ),
-          '2' => array (
+          '2' => array(
             'title' => ts('February'),
           ),
-          '3' => array (
+          '3' => array(
             'title' => ts('March'),
           ),
-          '4' => array (
+          '4' => array(
             'title' => ts('April'),
           ),
-          '5' => array (
+          '5' => array(
             'title' => ts('May'),
           ),
-          '6' => array (
+          '6' => array(
             'title' => ts('June'),
           ),
-          '7' => array (
+          '7' => array(
             'title' => ts('July'),
           ),
-          '8' => array (
+          '8' => array(
             'title' => ts('August'),
           ),
-          '9' => array (
+          '9' => array(
             'title' => ts('September'),
           ),
-          '10' => array (
+          '10' => array(
             'title' => ts('October'),
           ),
-          '11' => array (
+          '11' => array(
             'title' => ts('November'),
           ),
-          '12' => array (
+          '12' => array(
             'title' => ts('December'),
           ),
-          'display_total' => array (
+          'display_total' => array(
             'title' => ts('All Displayed Months'),
           ),
-          'all_total' => array (
+          'all_total' => array(
             'title' => ts('All Months'),
           ),
         ),
@@ -324,7 +326,7 @@ class CRM_Financialreports_Form_Report_Contribute_MonthlyTotal extends CRM_Repor
    * Overrides parent::beginPostProcessCommon().  This allows us to build and
    * populate the summary data table before the report runs its own queries.
    */
-  function beginPostProcessCommon() {
+  public function beginPostProcessCommon() {
     parent::beginPostProcessCommon();
 
     // Build and populate the summary table for this report.
@@ -338,11 +340,9 @@ class CRM_Financialreports_Form_Report_Contribute_MonthlyTotal extends CRM_Repor
    * already.
    *
    * @param String $table_name
-   * @return string Either "TEMPORARY" or "". This string can be used in a CREATE
-   *    TABLE query to create either a temporary or a durable table.
    *
    */
-  function _debug_temp_table($table_name) {
+  public function _debug_temp_table($table_name) {
     if ($this->_debug) {
       $query = "DROP TABLE IF EXISTS {$table_name}";
       CRM_Core_DAO::executeQuery($query);
@@ -357,7 +357,7 @@ class CRM_Financialreports_Form_Report_Contribute_MonthlyTotal extends CRM_Repor
   /**
    * Debug logger. If $this->_debug is TRUE, send $var to dsm() with label $label.
    */
-  function _debugDsm($var, $label = NULL) {
+  public function _debugDsm($var, $label = NULL) {
     if ($this->_debug && function_exists('dsm')) {
       dsm($var, $label);
     }
@@ -366,7 +366,7 @@ class CRM_Financialreports_Form_Report_Contribute_MonthlyTotal extends CRM_Repor
   /**
    * Build and populate the summary table for this report.
    */
-  function _buildAggregateTable() {
+  public function _buildAggregateTable() {
     $temporary = $this->_debug_temp_table($this->_tempTableName);
     $query = "
       CREATE $temporary TABLE `{$this->_tempTableName}` (
@@ -395,7 +395,7 @@ class CRM_Financialreports_Form_Report_Contribute_MonthlyTotal extends CRM_Repor
     $this->where();
 
     // Write monthly data into summary table.
-    foreach ($this->_columns[$this->_tempTableName]['fields']as $field_key => $field_value) {
+    foreach ($this->_columns[$this->_tempTableName]['fields'] as $field_key => $field_value) {
       if (intval($field_key) && !empty($this->_params['fields'][$field_key])) {
         $query = "
           INSERT INTO {$this->_tempTableName} (contact_id, `$field_key`)
@@ -449,7 +449,7 @@ class CRM_Financialreports_Form_Report_Contribute_MonthlyTotal extends CRM_Repor
   /**
    * Overrides parent::buildQuery().
    */
-  function buildQuery($applyLimit = TRUE) {
+  public function buildQuery($applyLimit = TRUE) {
     // Temporarily remove all filter params so they don't apply to the $where
     // clause in parent::buildQuery(). We've already applied filters in building
     // the temp table, so now we just want all the rows in $this->_tempTableName;
@@ -474,7 +474,6 @@ class CRM_Financialreports_Form_Report_Contribute_MonthlyTotal extends CRM_Repor
 
     return $sql;
   }
-
 
   /**
    * Get an SQL FROM clause to populate sums in the summary table, as appropriate
@@ -537,7 +536,7 @@ class CRM_Financialreports_Form_Report_Contribute_MonthlyTotal extends CRM_Repor
     }
 
     $this->addAddressFromClause();
-    
+
     if ($this->isTableSelected('civicrm_email')) {
       $this->_from .= "
           LEFT  JOIN civicrm_email  {$this->_aliases['civicrm_email']}
@@ -545,7 +544,6 @@ class CRM_Financialreports_Form_Report_Contribute_MonthlyTotal extends CRM_Repor
             AND {$this->_aliases['civicrm_email']}.is_primary = 1";
     }
   }
-
 
   /**
    * Alter display of rows.
@@ -605,13 +603,11 @@ class CRM_Financialreports_Form_Report_Contribute_MonthlyTotal extends CRM_Repor
   /**
    * Get summary statistics for each 'sum' column.
    *
-   * @return Array Values suitable for merging into the $statistics['counts']
-   *    arrey which is returned by this::statistics().
    */
   public function _statisticsColumnTotals() {
     $statistics = array();
     $select = $field_keys = array();
-    foreach ($this->_columns[$this->_tempTableName]['fields']as $field_key => $field_value) {
+    foreach ($this->_columns[$this->_tempTableName]['fields'] as $field_key => $field_value) {
       if (!empty($this->_params['fields'][$field_key])) {
         $select[] = "SUM(`$field_key`) AS `$field_key`";
         $field_keys[] = $field_key;
@@ -619,7 +615,7 @@ class CRM_Financialreports_Form_Report_Contribute_MonthlyTotal extends CRM_Repor
     }
 
     $query = "
-      SELECT ". implode(',', $select)
+      SELECT " . implode(',', $select)
       . "FROM {$this->_tempTableName}
     ";
     $dao = CRM_Core_DAO::executeQuery($query);
@@ -628,7 +624,7 @@ class CRM_Financialreports_Form_Report_Contribute_MonthlyTotal extends CRM_Repor
       $ts_params = array(
         '1' => $this->_columns[$this->_tempTableName]['fields'][$field_key]['title'],
       );
-      $statistics["sum_". $field_key] = array(
+      $statistics["sum_" . $field_key] = array(
         'title' => ts('Column total: %1', $ts_params),
         'value' => $dao->$field_key,
         'type' => CRM_Utils_Type::T_MONEY,
@@ -636,4 +632,5 @@ class CRM_Financialreports_Form_Report_Contribute_MonthlyTotal extends CRM_Repor
     }
     return $statistics;
   }
+
 }
