@@ -25,6 +25,8 @@
  +--------------------------------------------------------------------+
  */
 
+use CRM_Financialreports_ExtensionUtil as E;
+
 /**
  *
  * @package CRM

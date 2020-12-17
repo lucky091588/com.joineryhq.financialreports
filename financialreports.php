@@ -1,6 +1,7 @@
 <?php
 
 require_once 'financialreports.civix.php';
+use CRM_Financialreports_ExtensionUtil as E;
 
 /**
  * Implements hook_civicrm_config().
