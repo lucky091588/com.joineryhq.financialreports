@@ -25,6 +25,8 @@
  +--------------------------------------------------------------------+
  */
 
+use CRM_Financialreports_ExtensionUtil as E;
+
 /**
  *
  * @package CRM
@@ -79,11 +81,11 @@ class CRM_Financialreports_Form_Report_Contribute_MonthlyTotal extends CRM_Repor
         'fields' => array(
           // See parent::getBasicContactFields() for more fields.
           'sort_name' => array(
-            'title' => ts('Contact Name (sortable)'),
+            'title' => E::ts('Contact Name (sortable)'),
             'default' => TRUE,
           ),
           'display_name' => array(
-            'title' => ts('Contact Name (display)'),
+            'title' => E::ts('Contact Name (display)'),
           ),
           // 'id' is required because we use it in alterDisplay().
           'id' => array(
@@ -91,41 +93,41 @@ class CRM_Financialreports_Form_Report_Contribute_MonthlyTotal extends CRM_Repor
             'required' => TRUE,
           ),
           'first_name' => array(
-            'title' => ts('First Name'),
+            'title' => E::ts('First Name'),
           ),
           'nick_name' => array(
-            'title' => ts('Nick Name'),
+            'title' => E::ts('Nick Name'),
           ),
           'last_name' => array(
-            'title' => ts('Last Name'),
+            'title' => E::ts('Last Name'),
           ),
           'gender_id' => array(
-            'title' => ts('Gender'),
+            'title' => E::ts('Gender'),
           ),
           'external_identifier' => array(
-            'title' => ts('External identifier'),
+            'title' => E::ts('External identifier'),
           ),
         ),
         'order_bys' => array(
           'sort_name' => array(
-            'title' => ts('Last Name, First Name'),
+            'title' => E::ts('Last Name, First Name'),
             'default' => '1',
             'default_weight' => '0',
             'default_order' => 'ASC',
           ),
           'gender_id' => array(
             'name' => 'gender_id',
-            'title' => ts('Gender'),
+            'title' => E::ts('Gender'),
           ),
           'birth_date' => array(
             'name' => 'birth_date',
-            'title' => ts('Birth Date'),
+            'title' => E::ts('Birth Date'),
           ),
           'contact_type' => array(
-            'title' => ts('Contact Type'),
+            'title' => E::ts('Contact Type'),
           ),
           'contact_sub_type' => array(
-            'title' => ts('Contact Subtype'),
+            'title' => E::ts('Contact Subtype'),
           ),
         ),
         'grouping' => 'contact-fields',
@@ -143,153 +145,153 @@ class CRM_Financialreports_Form_Report_Contribute_MonthlyTotal extends CRM_Repor
         'filters' => array(
           'receive_date' => array('operatorType' => CRM_Report_Form::OP_DATE),
           'contribution_status_id' => array(
-            'title' => ts('Contribution Status'),
+            'title' => E::ts('Contribution Status'),
             'operatorType' => CRM_Report_Form::OP_MULTISELECT,
             'options' => CRM_Contribute_PseudoConstant::contributionStatus(),
             'default' => array(1),
             'type' => CRM_Utils_Type::T_INT,
           ),
           'currency' => array(
-            'title' => ts('Currency'),
+            'title' => E::ts('Currency'),
             'operatorType' => CRM_Report_Form::OP_MULTISELECT,
             'options' => CRM_Core_OptionGroup::values('currencies_enabled'),
             'default' => NULL,
             'type' => CRM_Utils_Type::T_STRING,
           ),
           'financial_type_id' => array(
-            'title' => ts('Financial Type'),
+            'title' => E::ts('Financial Type'),
             'operatorType' => CRM_Report_Form::OP_MULTISELECT,
             'options' => CRM_Contribute_PseudoConstant::financialType(),
             'type' => CRM_Utils_Type::T_INT,
           ),
           'contribution_page_id' => array(
-            'title' => ts('Contribution Page'),
+            'title' => E::ts('Contribution Page'),
             'operatorType' => CRM_Report_Form::OP_MULTISELECT,
             'options' => CRM_Contribute_PseudoConstant::contributionPage(),
             'type' => CRM_Utils_Type::T_INT,
           ),
           'total_amount' => array(
-            'title' => ts('Contribution Amount'),
+            'title' => E::ts('Contribution Amount'),
           ),
           'non_deductible_amount' => array(
-            'title' => ts('Non-deductible Amount'),
+            'title' => E::ts('Non-deductible Amount'),
           ),
         ),
       ),
       $this->_tempTableName => array(
         'fields' => array(
           '1' => array(
-            'title' => ts('January'),
+            'title' => E::ts('January'),
             'grouping' => 'months',
             'default' => TRUE,
           ),
           '2' => array(
-            'title' => ts('February'),
+            'title' => E::ts('February'),
             'grouping' => 'months',
             'default' => TRUE,
           ),
           '3' => array(
-            'title' => ts('March'),
+            'title' => E::ts('March'),
             'grouping' => 'months',
             'default' => TRUE,
           ),
           '4' => array(
-            'title' => ts('April'),
+            'title' => E::ts('April'),
             'grouping' => 'months',
             'default' => TRUE,
           ),
           '5' => array(
-            'title' => ts('May'),
+            'title' => E::ts('May'),
             'grouping' => 'months',
             'default' => TRUE,
           ),
           '6' => array(
-            'title' => ts('June'),
+            'title' => E::ts('June'),
             'grouping' => 'months',
             'default' => TRUE,
           ),
           '7' => array(
-            'title' => ts('July'),
+            'title' => E::ts('July'),
             'grouping' => 'months',
             'default' => TRUE,
           ),
           '8' => array(
-            'title' => ts('August'),
+            'title' => E::ts('August'),
             'grouping' => 'months',
             'default' => TRUE,
           ),
           '9' => array(
-            'title' => ts('September'),
+            'title' => E::ts('September'),
             'grouping' => 'months',
             'default' => TRUE,
           ),
           '10' => array(
-            'title' => ts('October'),
+            'title' => E::ts('October'),
             'grouping' => 'months',
             'default' => TRUE,
           ),
           '11' => array(
-            'title' => ts('November'),
+            'title' => E::ts('November'),
             'grouping' => 'months',
             'default' => TRUE,
           ),
           '12' => array(
-            'title' => ts('December'),
+            'title' => E::ts('December'),
             'grouping' => 'months',
             'default' => TRUE,
           ),
           'display_total' => array(
-            'title' => ts('All Displayed Months'),
+            'title' => E::ts('All Displayed Months'),
             'grouping' => 'months',
             'default' => TRUE,
           ),
           'all_total' => array(
-            'title' => ts('All Months'),
+            'title' => E::ts('All Months'),
             'grouping' => 'months',
           ),
         ),
         'order_bys' => array(
           '1' => array(
-            'title' => ts('January'),
+            'title' => E::ts('January'),
           ),
           '2' => array(
-            'title' => ts('February'),
+            'title' => E::ts('February'),
           ),
           '3' => array(
-            'title' => ts('March'),
+            'title' => E::ts('March'),
           ),
           '4' => array(
-            'title' => ts('April'),
+            'title' => E::ts('April'),
           ),
           '5' => array(
-            'title' => ts('May'),
+            'title' => E::ts('May'),
           ),
           '6' => array(
-            'title' => ts('June'),
+            'title' => E::ts('June'),
           ),
           '7' => array(
-            'title' => ts('July'),
+            'title' => E::ts('July'),
           ),
           '8' => array(
-            'title' => ts('August'),
+            'title' => E::ts('August'),
           ),
           '9' => array(
-            'title' => ts('September'),
+            'title' => E::ts('September'),
           ),
           '10' => array(
-            'title' => ts('October'),
+            'title' => E::ts('October'),
           ),
           '11' => array(
-            'title' => ts('November'),
+            'title' => E::ts('November'),
           ),
           '12' => array(
-            'title' => ts('December'),
+            'title' => E::ts('December'),
           ),
           'display_total' => array(
-            'title' => ts('All Displayed Months'),
+            'title' => E::ts('All Displayed Months'),
           ),
           'all_total' => array(
-            'title' => ts('All Months'),
+            'title' => E::ts('All Months'),
           ),
         ),
       ),
@@ -308,7 +310,7 @@ class CRM_Financialreports_Form_Report_Contribute_MonthlyTotal extends CRM_Repor
     // If we have a campaign, build out the relevant elements
     if ($campaignEnabled && !empty($this->activeCampaigns)) {
       $this->_columns['civicrm_contribution']['filters']['campaign_id'] = array(
-        'title' => ts('Campaign'),
+        'title' => E::ts('Campaign'),
         'type' => CRM_Utils_Type::T_INT,
         'operatorType' => CRM_Report_Form::OP_MULTISELECT,
         'options' => $this->activeCampaigns,
@@ -571,9 +573,9 @@ class CRM_Financialreports_Form_Report_Contribute_MonthlyTotal extends CRM_Repor
           'reset=1&selectedChild=contribute&cid=' . $row['civicrm_contact_id']
         );
         $rows[$rowNum]['civicrm_contact_display_name_link'] = $url;
-        $rows[$rowNum]['civicrm_contact_display_name_hover'] = ts("Lists detailed contribution(s) for this record.");
+        $rows[$rowNum]['civicrm_contact_display_name_hover'] = E::ts("Lists detailed contribution(s) for this record.");
         $rows[$rowNum]['civicrm_contact_sort_name_link'] = $url;
-        $rows[$rowNum]['civicrm_contact_sort_name_hover'] = ts("Lists detailed contribution(s) for this record.");
+        $rows[$rowNum]['civicrm_contact_sort_name_hover'] = E::ts("Lists detailed contribution(s) for this record.");
         $entryFound = TRUE;
       }
 
@@ -625,7 +627,7 @@ class CRM_Financialreports_Form_Report_Contribute_MonthlyTotal extends CRM_Repor
         '1' => $this->_columns[$this->_tempTableName]['fields'][$field_key]['title'],
       );
       $statistics["sum_" . $field_key] = array(
-        'title' => ts('Column total: %1', $ts_params),
+        'title' => E::ts('Column total: %1', $ts_params),
         'value' => $dao->$field_key,
         'type' => CRM_Utils_Type::T_MONEY,
       );
